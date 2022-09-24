@@ -1,3 +1,134 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import Card from '../component/Card.svelte';
+
+	// type Post = {
+	// 	createdAt: Date;
+	// 	image: any;
+	// 	content: string;
+	// 	title: string;
+	// 	id: number;
+	// };
+
+	// let items: Post[] = [];
+	// let loaded = false;
+
+	// onMount(() => loadThings(false));
+
+	// function loadThings(wait: boolean) {
+	// 	if (typeof fetch !== 'undefined') {
+	// 		loaded = false;
+
+	// 		fetch('https://api.fake-rest.refine.dev/posts')
+	// 			.then((response) => response.json())
+	// 			.then((json) =>
+	// 				setTimeout(
+	// 					() => {
+	// 						items = json;
+	// 						loaded = true;
+	// 					},
+	// 					// Simulate a long load time.
+	// 					wait ? 2000 : 0
+	// 				)
+	// 			);
+	// 	}
+	// }
+
+	// import { request, gql } from 'graphql-request';
+
+	// const query = gql`
+	// 	{
+	// 		listContentModels {
+	// 			data {
+	// 				name
+	// 				modelId
+	// 			}
+	// 		}
+	// 	}
+	// `;
+
+	// let data: any = [];
+
+	// onMount(() => loadData(false));
+
+	// const endpoint = import.meta.env.VITE_PUBLIC_CMS_ENPOINT;
+	// const secret = import.meta.env.VITE_PUBLIC_TOKEN_SECRET;
+	// function loadData(wait: boolean) {
+	// 	request(`https://d3ats32nbrgv3r.cloudfront.net/cms/read/en-US`, query).then((data) =>
+	// 		console.log(data)
+	// 	);
+	// 	// Simulate a long load time.
+	// 	wait ? 2000 : 0;
+	// }
+
+	// import { GraphQLClient, gql } from 'graphql-request';
+
+	// const query = gql`
+	// 	{
+	// 		countries {
+	// 			name
+	// 			emoji
+	// 		}
+	// 	}
+	// `;
+
+	// export const load = async () => {
+	// 	const graphCMSClient = new GraphQLClient('https://countries.trevorblades.com/', {
+	// 		headers: {}
+	// 	});
+
+	// 	const { countries } = await graphCMSClient.request(query);
+
+	// 	return {
+	// 		props: { countries }
+	// 	};
+	// }
+
+	import { GraphQLClient, gql } from 'graphql-request';
+
+	let blog: any[];
+	let loading = false;
+
+	onMount(() => main(false));
+	export async function main(wait: boolean) {
+		const endpoint = '';
+
+		loading = false;
+		const graphQLClient = new GraphQLClient(endpoint, {
+			headers: {
+				authorization: 'Bearer '
+			}
+		});
+
+		const query = gql`
+			{
+				listSvelteBlogs {
+					data {
+						title
+						description
+						image
+						slug
+					}
+				}
+			}
+		`;
+		await graphQLClient.request(query).then((res) =>
+			setTimeout(
+				() => {
+					blog = res.listSvelteBlogs.data;
+					loading = true;
+				},
+				// Simulate a long load time.
+				wait ? 2000 : 0
+			)
+		);
+		console.log(JSON.stringify(blog, null, 2));
+	}
+
+	// Fetch Error
+	main(false).catch((error) => console.error(error));
+</script>
+
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte blog app" />
@@ -5,84 +136,10 @@
 
 <section>
 	<h1>
-		<span class="welcome">Welcome Back</span>
+		<span class="welcome">Create a blog with Webiny and Svelte / SvelteKit </span>
 	</h1>
 
-	<main class="container">
-		<div class="card-container">
-			<div class="card-image">
-				<img
-					src="https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-					alt="a brand new sports car"
-				/>
-			</div>
-			<div class="card-body">
-				<span class="card-badge card-badge-blue">Car design</span>
-				<h1>Why is the sports cars so well designed?</h1>
-				<p class="card-subtitle">An exploration into the car design industry and how it works</p>
-				<div class="card-author">
-					<img
-						src="https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-						alt="author avatar"
-					/>
-					<div class="author-info">
-						<p class="author-name">John Doe</p>
-						<p class="post-timestamp">2h ago</p>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="card-container">
-			<div class="card-image">
-				<img
-					src="https://images.unsplash.com/photo-1504728078670-d0a59873c8c4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
-					alt="a landscape view full of baloons"
-				/>
-			</div>
-			<div class="card-body">
-				<span class="card-badge card-badge-purple">Adventure</span>
-				<h1>Discover new adventures over the world</h1>
-				<p class="card-subtitle">Adventure and baloons are trends these days</p>
-				<div class="card-author">
-					<img
-						src="https://images.unsplash.com/photo-1504728078670-d0a59873c8c4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
-						alt="author avatar"
-					/>
-					<div class="author-info">
-						<p class="author-name">John Doe</p>
-						<p class="post-timestamp">2h ago</p>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="card-container">
-			<div class="card-image">
-				<img
-					src="https://images.unsplash.com/photo-1506422748879-887454f9cdff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
-					alt="a city full of buildings"
-				/>
-			</div>
-			<div class="card-body">
-				<span class="card-badge card-badge-pink">Engineering</span>
-				<h1>Living in downtown in the biggest cities</h1>
-				<p class="card-subtitle">
-					Citizens of the biggest cities in the world talk about their lives
-				</p>
-				<div class="card-author">
-					<img
-						src="https://images.unsplash.com/photo-1506422748879-887454f9cdff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
-						alt="author avatar"
-					/>
-					<div class="author-info">
-						<p>John Doe</p>
-						<p>2h ago</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</main>
+	<Card {blog} {loading} />
 </section>
 
 <style>
@@ -94,97 +151,10 @@
 		flex: 1;
 	}
 
+	.welcome {
+		text-align: center;
+	}
 	h1 {
-		width: 100%;
-	}
-
-	.container {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		gap: 20px;
-	}
-
-	.card-container {
-		width: 350px;
-		height: 440px;
-		background-color: #fff;
-		border-radius: 8px;
-		margin: auto;
-		box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-	}
-
-	.card-image img {
-		height: 220px;
-		width: 100%;
-		border-radius: 8px 8px 0 0;
-		background-size: cover;
-	}
-
-	.card-body {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		padding: 16px;
-		min-height: 200px;
-	}
-
-	.card-badge {
-		text-transform: uppercase;
-		background-color: #fff;
-		color: #fff;
-		padding: 2px 8px;
-		border-radius: 70px;
-		margin: 0;
-		font-size: 12px;
-	}
-
-	.card-badge-blue {
-		background-color: #92d4e4;
-	}
-
-	.card-badge-purple {
-		background-color: #3d1d94;
-	}
-
-	.card-badge-pink {
-		background-color: #c62bcb;
-	}
-
-	.card-body h1 {
-		font-size: 16px;
-		margin: 8px 0;
-	}
-
-	.card-body p {
-		font-size: 14px;
-		margin: 8px 0 16px 0;
-	}
-
-	.card-author {
-		display: flex;
-		align-items: center;
-	}
-
-	.card-author p {
-		margin: 0 16px;
-		font-size: 12px;
-	}
-
-	.card-author p:last-child {
-		color: #888;
-	}
-
-	.card-author img {
-		border-radius: 50%;
-		height: 48px;
-		width: 48px;
-		margin-top: auto;
-	}
-
-	@media screen and (max-width: 1000px) {
-		.container {
-			grid-template-columns: 1fr;
-		}
+		margin-bottom: 3rem;
 	}
 </style>
