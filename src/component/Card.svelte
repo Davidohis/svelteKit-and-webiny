@@ -1,6 +1,5 @@
 <script lang="ts">
 	export let blog: any[] = [];
-	export let loading: boolean;
 </script>
 
 <main class="container">
@@ -13,7 +12,7 @@
 				<div class="card-body">
 					<span class="card-badge card-badge-blue">{blog.slug}</span>
 					<h1>{blog.title}</h1>
-					<p class="card-subtitle">{blog.description}</p>
+					<p class="card-subtitle">{blog.description.slice(0, 80)}</p>
 					<div class="card-link">Read more</div>
 				</div>
 			</a>

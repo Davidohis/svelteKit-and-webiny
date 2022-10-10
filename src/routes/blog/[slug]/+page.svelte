@@ -3,24 +3,21 @@
 	import { page } from '$app/stores';
 	import { GraphQLClient, gql } from 'graphql-request';
 
-	// type Post = {
-	// 	title: any;
-	// 	description: any;
-	// 	image: any;
-	// 	slug: any;
-	// 	body: {};
-	// };
-
 	let slugID = $page.params.slug;
 	let blog: any;
+	let preview: any;
+	let loading = false;
 
 	onMount(() => main(false));
 	export async function main(wait: boolean) {
-		const endpoint = '';
+		loading = false;
+
+		const endpoint = import.meta.env.VITE_PREVIEW_API_CMS_ENPOINT;
 
 		const graphQLClient = new GraphQLClient(endpoint, {
 			headers: {
-				authorization: 'Bearer '
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${import.meta.env.VITE_PUBLIC_TOKEN_SECRET}`
 			}
 		});
 
@@ -43,9 +40,11 @@
 					blog = JSON.stringify(
 						res.listSvelteBlogs.data.find((p: { slug: string }) => p.slug === slugID)
 					);
+					preview = JSON.parse(blog);
+					loading = true;
 				},
 				// Simulate a long load time.
-				wait ? 2000 : 0
+				wait ? 1000 : 0
 			)
 		);
 	}
@@ -60,23 +59,27 @@
 </svelte:head>
 
 <section>
-	<pre>{blog}</pre>
 	<a href="/"><button class="btn btn-primary">Go Back</button></a>
-	<div class="card-wrapper">
-		<div class="card">
-			<div class="card-header">
-				<img
-					src="https://images.unsplash.com/photo-1646974005583-01e9a7b0b5f8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80"
-					alt=""
-				/>
-			</div>
-			<div class="card-content">
-				<span>Technology</span>
-				<h3>{blog}</h3>
-				<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, temporibus!</p>
+
+	{#if !loading}
+		<div class="loading">
+			<img src={'https://i.ibb.co/tPk7RvT/giphy.gif'} alt="a brand new sports car" />
+		</div>
+	{:else}
+		<div class="card-wrapper">
+			<div class="card">
+				<div class="card-content">
+					<h3>{preview && preview.title}</h3>
+				</div>
+				<div class="card-header">
+					<img src={preview && preview.image} alt="" />
+				</div>
+				<div class="card-body">
+					<p>{preview && preview.body}</p>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </section>
 
 <style>
@@ -113,7 +116,6 @@
 	.card {
 		width: 860px;
 		background-color: #fff;
-		box-shadow: 0 0 7px rgba(0, 0, 0, 0.6);
 		border-radius: 0.5rem;
 	}
 
@@ -131,28 +133,18 @@
 		padding: 1rem;
 	}
 
-	.card-content span {
-		background-color: #51adc4;
-		color: #fff;
-		font-weight: 300;
-		font-size: 10px;
-		padding: 0.5rem 0.75rem;
-		border-radius: 1rem;
-		text-transform: uppercase;
-	}
-
 	.card-content h3 {
 		margin: 1rem 0 0.5rem 0;
+		font-size: 35px;
+		text-align: center;
+		text-transform: capitalize;
+		text-decoration: underline;
 	}
 
-	.card-content p {
-		font-size: 14px;
-	}
-
-	.card-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem;
+	.loading img {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 20%;
 	}
 </style>
