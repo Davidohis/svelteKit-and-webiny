@@ -8,8 +8,8 @@
 	let preview: any;
 	let loading = false;
 
-	onMount(() => main(false));
-	export async function main(wait: boolean) {
+	onMount(() => main());
+	export async function main() {
 		loading = false;
 
 		const endpoint = import.meta.env.VITE_PREVIEW_API_CMS_ENPOINT;
@@ -35,22 +35,18 @@
 			}
 		`;
 		await graphQLClient.request(query).then((res) =>
-			setTimeout(
-				() => {
-					blog = JSON.stringify(
-						res.listSvelteBlogs.data.find((p: { slug: string }) => p.slug === slugID)
-					);
-					preview = JSON.parse(blog);
-					loading = true;
-				},
-				// Simulate a long load time.
-				wait ? 1000 : 0
-			)
+			setTimeout(() => {
+				blog = JSON.stringify(
+					res.listSvelteBlogs.data.find((p: { slug: string }) => p.slug === slugID)
+				);
+				preview = JSON.parse(blog);
+				loading = true;
+			}, 1000)
 		);
 	}
 
 	// Fetch Error
-	main(false).catch((error) => console.error(error));
+	main().catch((error) => console.error(error));
 </script>
 
 <svelte:head>

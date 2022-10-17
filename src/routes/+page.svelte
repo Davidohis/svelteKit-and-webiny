@@ -6,11 +6,12 @@
 	let blog: any[];
 	let loading = false;
 
-	onMount(() => main(false));
+	onMount(() => main());
 
-	export async function main(wait: boolean) {
+	export async function main() {
 		loading = false;
 		const endpoint = import.meta.env.VITE_PUBLIC_CMS_ENPOINT;
+
 
 		const graphQLClient = new GraphQLClient(endpoint, {
 			headers: {
@@ -18,7 +19,7 @@
 				Authorization: `Bearer ${import.meta.env.VITE_PUBLIC_TOKEN_SECRET}`
 			}
 		});
-		
+
 		const query = gql`
 			{
 				listSvelteBlogs {
@@ -32,19 +33,15 @@
 			}
 		`;
 		await graphQLClient.request(query).then((res) =>
-			setTimeout(
-				() => {
-					blog = res.listSvelteBlogs.data;
-					loading = true;
-				},
-				// Simulate a long load time.
-				wait ? 1000 : 0
-			)
+			setTimeout(() => {
+				blog = res.listSvelteBlogs.data;
+				loading = true;
+			}, 1000)
 		);
 	}
 
 	// Fetch Error
-	main(false).catch((error) => console.error(error));
+	main().catch((error) => console.error(error));
 </script>
 
 <svelte:head>
@@ -57,13 +54,14 @@
 		<span class="welcome">Create a blog with Webiny and Svelte / SvelteKit </span>
 	</h1>
 
-	{#if !loading}}
+	{#if !loading}
 		<div class="loading">
 			<img src={'https://i.ibb.co/tPk7RvT/giphy.gif'} alt="a brand new sports car" />
 		</div>
 	{:else}
 		<Card {blog} />
 	{/if}
+
 </section>
 
 <style>
